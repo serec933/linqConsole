@@ -6,8 +6,30 @@ namespace linqConsole
 {
     class Program
     {
+        public delegate int Sum(int val1, int val2);
+        //il delegate è la firma di una funzione 
+        //Posso assegnargli una qualunque funzoone che prende due int e return un int
+        public static int PrimaSomma(int val1, int val2)
+        {
+            return val1 + val2;
+        }
         static void Main(string[] args)
         {
+            var process = new BusinessProcess();
+            process.Started += Process_Started;
+            process.Started += Process_Started1;
+            process.StartedCore += Process_StartedCore;
+            //process_started è l'event handler, sti facendo la subscription
+            //quando sollevo l'evento Process_started è in ascolto 
+            //Process_started fa qualcosa quando sollevo l'evento
+            process.Completed += Process_Completed;
+            process.CompletedCore += Process_CompletedCore;
+            process.ProcessDATA();
+
+            Sum LamiaSomma = PrimaSomma;
+            //Ho assegnato ad una variabile di tipo SUM il metodo Prima Somma
+
+            #region STEP ONE
             Console.WriteLine("==== LINQ ====");
 
             string FirstName = "Mario";
@@ -31,7 +53,34 @@ namespace linqConsole
             //ToDouble è della classe stringExtension
             //La uso con le string
             // L'intellegence riconosce la classe e riconosce come extension
+            #endregion
+
             
+        }
+
+        private static void Process_CompletedCore(object sender, BusinessProcess.ProcessEndEventArgs e)
+        {
+            Console.WriteLine("Ciao, sono l'handler di CompletedCore, la durata del processo è {0} ms", e.Duration);
+        }
+
+        private static void Process_StartedCore(object sender, EventArgs e)
+        {
+            Console.WriteLine("Ciao, sono l'handler del delegate non creato, il processo è iniziato.");
+        }
+
+        private static void Process_Completed(int duration)
+        {
+            Console.WriteLine("Ciao, sono l'handler di process Completed, il processo ha impiegato {0} ms", duration);
+        }
+
+        private static void Process_Started1()
+        {
+            Console.WriteLine("Ciao, sono il secondo handler, il processo è iniziato.");
+        }
+
+        private static void Process_Started()
+        {
+            Console.WriteLine("Ciao, sono il primo handler, il processo è iniziato.");
         }
     }
     #region Generics
